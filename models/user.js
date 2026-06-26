@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema({
         enum: ['candidate','recruiter', 'admin'],
         default:'candidate'
     },
-    isVarified: {
+    isVerified: {
         type: Boolean,
         default:false
     },
