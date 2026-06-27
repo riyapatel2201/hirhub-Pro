@@ -1,11 +1,16 @@
 require('dotenv').config()
-
-
 const express = require('express')
 const cors = require('cors')
 const connectDB  = require('./config/db')
 //import authRoutes routes
 const authRoutes= require('./routes/authRoutes')
+
+const candidateRoutes = require('./routes/candidateRoutes')
+
+const recruiterRoutes = require('./routes/recruiterRoutes')
+
+const adminRoutes = require('./routes/adminRoutes')
+
 
 const app = express()
 //middlewares
@@ -13,6 +18,9 @@ app.use(express.json())
 app.use(cors())
 //connect to app
 app.use('/api/auth', authRoutes)
+app.use('/api/candidate', candidateRoutes)
+app.use('/api/recruiter',recruiterRoutes)
+app.use('/api/admin', adminRoutes)
 
 connectDB() 
 
