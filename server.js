@@ -11,6 +11,10 @@ const recruiterRoutes = require('./routes/recruiterRoutes')
 
 const adminRoutes = require('./routes/adminRoutes')
 
+const jobRoutes = require('./routes/jobRoutes')
+
+const closeExpiredJobs = require('./jobs/closeExpiredJobs')
+
 
 const app = express()
 //middlewares
@@ -21,8 +25,10 @@ app.use('/api/auth', authRoutes)
 app.use('/api/candidate', candidateRoutes)
 app.use('/api/recruiter',recruiterRoutes)
 app.use('/api/admin', adminRoutes)
+app.use('/api/jobs', jobRoutes)
 
 connectDB() 
+closeExpiredJobs()
 
 app.get('/', (req, res) => {
     res.json({ message: 'HireHub Pro API is running' })
