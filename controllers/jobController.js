@@ -45,16 +45,66 @@ const postJob = async (req, res) => {
 //get all jobs 
 const getAllJobs = async (req, res) => {
     try {
-        //step 1 find all open jobs 
+        //step 1 get query params from URL 
+        const {search, jobType, location, experienceLevel, minSalary, maxSalary, page, limit} = req.query
+
+        //step 2 build query dynamically
+        const query = {isClosed: false}//always show open jobs only
+
+        //if search exists -> search in title , description, requirements
+        if(search){
+            const searchRegex = new RegExp(search, 'i') // "i" = case insensitive
+
+            query.$or = [
+                {title: {$regex: searchRegex}},
+                {description:{$regex: searchRegex}},
+                {requirements:{$regex: searchRegex}}
+            ]
+        }
+        //if jobType filter exists
+        if(jobType) {
+            query.jobType = jobType
+        }
+        //if location filter exists
+        if(location) {
+            query.location = {$regex: new RegExp(location, 'i')}
+        }
+        // if experienceLevel filter exists
+        if(experienceLevel){
+            query.experienceLevel = experienceLevel
+        }
+        //IF salary range filter exists
+        if(minSalary) {
+            query['salary.min']={$gte: Number(minSalary)}    
+        }
+        if(maxSalary){
+            query['salary.max']={$lte:Number(maxSalary)}
+        }
+        //step 3 pagination
+        const pageNum = Number(page) || 1 //default page 1
+        const limitNum = Number(limit) || 10 //default 10 jobs per page
+
+        const skip = (pageNum - 1)* limitNum  //how many to skip
+
+        
+        //step  4 find all open jobs 
         //populate brings recruiter's name and company info
         //from all job document in db find isclosed false and return onoy company nam name , logo
-        const jobs = await Job.find({isClosed: false})
+        const jobs = await Job.find(query)
         .populate('recruiter', 'name companyName companyLogo')
-        .sort({createdAt: -1}) //newest first 
+        .sort({createdAt: -1}) //newest first
+        .skip(skip)
+        .limit(limitNum) 
+
+        //step 5 get total count for matching document
+        const totalJobs = await Job.countDocuments(query)
 
         res.status(200).json({
             message:'Jobs fetched successfully',
             count: jobs.length,
+            totalJobs,
+            currentPage: pageNum,
+            totalPages: Math.ceil(totalJobs/limitNum),
             jobs
         })
     } catch (error) {
