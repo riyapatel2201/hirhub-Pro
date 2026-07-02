@@ -1,7 +1,6 @@
 const Job = require('../models/Job')
 
 
-
 const postJob = async (req, res) => {
     try {
         //step 1 get job data from req.body

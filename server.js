@@ -15,6 +15,7 @@ const jobRoutes = require('./routes/jobRoutes')
 
 const closeExpiredJobs = require('./jobs/closeExpiredJobs')
 
+const applicationRoutes = require('./routes/applicationRoutes')
 
 const app = express()
 //middlewares
@@ -26,6 +27,7 @@ app.use('/api/candidate', candidateRoutes)
 app.use('/api/recruiter',recruiterRoutes)
 app.use('/api/admin', adminRoutes)
 app.use('/api/jobs', jobRoutes)
+app.use('/api/applications',applicationRoutes)
 
 connectDB() 
 closeExpiredJobs()
